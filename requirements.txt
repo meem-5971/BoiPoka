@@ -1,0 +1,27 @@
+command : pip freeze | py -c "for p in __import__('sys').stdin: print(p.split('=')[0])"
+
+amqp
+asgiref
+billiard
+celery
+crispy-bootstrap5
+dj-database-url
+Django
+django-celery-beat
+django-crispy-forms
+django-email
+django-environ
+django-timezone-field
+kombu
+pillow
+psycopg2
+psycopg2-binary
+python-crontab
+python-dateutil
+pytz
+redis
+six
+sqlparse
+typing_extensions
+tzdata
+vine
