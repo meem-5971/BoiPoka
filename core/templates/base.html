@@ -1,0 +1,35 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="Dummy Banking System" />
+        <title>
+            {% block head_title %}Library Management System{% endblock %}
+        </title>
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+        {% block head_extra %}{% endblock %}
+        <style>
+            body {
+                background-color: #6610f2; 
+            }
+        </style>
+    </head>
+    <body style="background-color: #d1e8ff; ">
+        {% include 'navbar.html' %}
+        {% block body %}
+            <div class="container mt-4" id="main">
+                
+                {% block content %}
+                {% endblock %}
+            </div>
+            
+        {% endblock %}
+        {%include 'footer.html'%}
+    </body>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</html>

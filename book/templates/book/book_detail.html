@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+
+{% if messages %}
+    <div class="container">
+        {% for message in messages %}
+            {% if message.tags == 'success' %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {% elif message.tags == 'error' %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {% else %}
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
+            {% endif %}
+                
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">{{ message }}</button>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+
+
+<div class="col-12">
+    <div class="card m-2">
+        <div class="card-body">
+            <img src="{{book.image.url}}" class="card-img-top" alt="..." style="width:50%;">
+            <h1 class="card-title">{{book.title}}</h1>
+						<p class="card-text">Genre: {{book.genre}}</p>
+						<p class="card-text">Price: ${{book.price}}</p>
+						<p class="card-text">{{book.content}}</p>
+            
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="card m-2">
+    <h5 class="p-3">Read All Reviews</h5>
+    {% for review in book.reviews.all %}
+  <div class="card-body border m-2">
+        <p><b>{{review.name}}</b> {{review.created_on}}</p>
+        <p>{{review.body}}</p>
+    </div>
+    {% empty %}
+      <p>No reviews yet.</p>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,73 @@
+{% extends 'base.html' %} {% load humanize %}{% load static %} {% block head_title %}Borrow History{% endblock %}
+{% block content %}
+
+{% if messages %}
+    <div class="container">
+        {% for message in messages %}
+            {% if message.tags == 'success' %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {% elif message.tags == 'error' %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {% else %}
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
+            {% endif %}
+                
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">{{ message }}</button>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<div class="m-10 py-3 px-4 bg-[#fef5e6] rounded-xl shadow-md">
+	<table class="table-auto mx-auto w-full px-5 rounded-xl mt-8 border dark:border-neutral-500">
+			<thead class="bg-purple-900 text-dark text-left">
+					<tr class="bg-gradient-to-tr from-[#766142] to-[#766142] rounded-md py-2 px-4 text-black font-bold">
+							<th class="px-4 py-2">Book Title</th>
+							<th class="px-4 py-2">Borrowing Date</th>
+							<th class="px-4 py-2">Borrow Price</th>
+							<th class="px-4 py-2">Balance After Borrow</th>
+							<th class="px-4 py-2">Return Book</th>
+							<th class="px-4 py-2">Review Book</th>
+					</tr>
+			</thead>
+			<tbody>
+					{% for borrow in borrow_history %}
+					<tr class="border-b dark:border-neutral-500">
+							<td class="px-4 py-2">
+
+									{{ borrow.book.title }}
+							</td>
+							<td class="px-4 py-2">
+									{{ borrow.created_on|date:"D d M Y" }}
+							</td>
+							<td class="px-4 py-2">
+									$ {{ borrow.book.price }}
+							</td>
+							<td class="px-4 py-2">
+									$ {{ borrow.balance_after_borrow|floatformat:2  }}
+							</td>
+							<td class="px-4 py-2">
+									<form action="{% url 'return_book' borrow.book.pk %}" method="post">
+											{% csrf_token %}
+											<button type="submit"
+													class="border-2 px-3 py-2 font-bold rounded-xl">Return
+													Book</button>
+									</form>
+							</td>
+							<td class="px-4 py-2">
+								<a href="{%url 'write_review' borrow.book.pk%}">
+								<button type="submit"
+													class="border-2 text-success px-3 py-2 font-bold rounded-xl">Review
+													Book</button> </a>
+
+							</td>
+					</tr>
+					{% endfor %}
+			</tbody>
+	</table>
+</div>
+
+
+
+
+{% endblock %}

@@ -1,0 +1,75 @@
+{% extends 'base.html' %} 
+{% load static %} 
+
+{% block head_title %}BoiPoka{% endblock %} 
+
+{% block content %}
+<div class="d-flex flex-wrap px-5 pt-3 align-items-center">
+  <div class="col-6">
+    <h1>Welcome to BoiPoka</h1>
+    <p>Streamlined Library Management for All Your Reading Needs</p>
+  </div>
+  <div class="col-6">
+    <img src="{% static 'img/boipoka_banner.jpg' %}" alt="BoiPoka Banner"> <!-- Corrected the static file path -->
+  </div>
+</div>
+
+<hr/>
+
+<h3>Search by Genre</h3>
+<div class="m-3">
+  <div class="container align-items-center">
+    <div class="row mt-5">
+      {% for genre in genre %}
+        <div class="col pt-3">
+          <a href="{% url 'genre_wise' genre.slug %}" class="btn btn-outline-primary btn-block mb-3">{{ genre.name }}</a>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<h4>{{ data|length }} books found</h4>
+
+<div class="container mx-container bg-body-secondary pt-2 pb-1">
+  <div class="d-flex flex-wrap justify-content-center">
+    {% for genre in genres %}
+      <div class="m-2">
+        <div class="box text-center">
+          <a href="{% url 'genre_wise' genre.slug %}" class="text-decoration-none text-dark">
+            <h5 class="bx">{{ genre.name }}</h5>
+          </a>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="d-flex flex-wrap justify-content-center pt-5">
+  {% for book in data %}
+    <div class="col-sm-3">
+      <div class="card m-2">
+        <div class="card-body" style="width: 18rem;">
+          <img src="{{ book.image.url }}" class="card-img-top" alt="{{ book.title }}">
+          <h5 class="card-title">
+            <a href="{% url 'book_detail' book.pk %}" class="text-decoration-none text-dark">{{ book.title }}</a>
+          </h5>
+          <p class="card-text">Genre: {{ book.genre }}</p>
+          <p class="card-text">Price: ${{ book.price }}</p>
+          <p class="card-text">{{ book.content|truncatewords:10 }}</p>
+          <div class="container d-flex flex-wrap gap-10px">
+            {% if request.user.is_authenticated %}
+              <form method="post" action="{%url 'borrow_book' book.pk %}"> <!-- Corrected the URL name -->
+                {% csrf_token %}
+								
+                <button type="submit" class="btn btn-primary pr-10">Borrow Now</button>
+              </form>
+            {% endif %}
+            <a href="{% url 'book_detail' book.pk %}"><button class="btn btn-warning pl-10">View Details</button></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}
