@@ -4,7 +4,6 @@ from . import models
 
 # admin.site.register(models.Category)
 class GenreAdmin(admin.ModelAdmin):
-    prepopulated_fields = {'slug' : ('name',)}
-    list_display = ['name', 'slug']
+    list_display = ['name']
     
 admin.site.register(models.Genre, GenreAdmin)

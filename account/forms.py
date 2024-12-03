@@ -2,59 +2,81 @@ from typing import Any
 from django import forms 
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from account.models import UserAccount,UserAddress
+from account.models import UserAccount, UserAddress
 from account.constants import GENDER_TYPE
 
+from django.db import IntegrityError
+
+from django.core.exceptions import ValidationError
+
 class UserRegistrationForm(UserCreationForm):
-    age = forms.IntegerField()
-    gender = forms.ChoiceField(choices = GENDER_TYPE)
-    birth_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
-    street_name = forms.CharField(max_length=100)
-    city = forms.CharField(max_length=100)
-    postal_code = forms.IntegerField()
-    country = forms.CharField(max_length=100)
+    age = forms.IntegerField(label='বয়স')
+    gender = forms.ChoiceField(choices=GENDER_TYPE, label='জেন্ডার')
+    birth_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), label='জন্মতারিখ')
+    street_name = forms.CharField(max_length=100, label='রাস্তার নাম')
+    city = forms.CharField(max_length=100, label='শহর')
+    postal_code = forms.IntegerField(label='পোস্টাল কোড')
+    country = forms.CharField(max_length=100, label='দেশ')
+    first_name = forms.CharField(max_length=100, label='প্রথম নাম')
+    last_name = forms.CharField(max_length=100, label='শেষ নাম')
+    email = forms.EmailField(max_length=100, label='ইমেইল')
+    username = forms.CharField(label='ইউজারনেম')
+    password1 = forms.CharField(label='পাসওয়ার্ড', widget=forms.PasswordInput)
+    password2 = forms.CharField(label='পাসওয়ার্ড নিশ্চিত করুন', widget=forms.PasswordInput)
 
     class Meta:
         model = User
-        fields = ['username', 'first_name', 'last_name', 'email', 'password1', 'password2','age', 'gender', 'birth_date', 'street_name', 'city', 'postal_code', 'country']
+        fields = ['username', 'first_name', 'last_name', 'email', 'password1', 'password2',
+                  'age', 'gender', 'birth_date', 'street_name', 'city', 'postal_code', 'country']
 
-    def save(self,commit=True):
+    def save(self, commit=True):
+        # Create the user instance without committing to the database
         new_user = super().save(commit=False)
-        if commit == True:
-            new_user.save()
-            age = self.cleaned_data.get('age')
-            gender = self.cleaned_data.get('gender')
-            birth_date = self.cleaned_data.get('birth_date')
+        
+        if commit:
+            new_user.save()  # Save the user instance first
+
+            # Check if the user already has a UserAccount
+            try:
+                user_account = UserAccount.objects.get(user=new_user)
+                # If the UserAccount already exists, raise an error
+                raise ValidationError("This user already has a registered account.")
+            except UserAccount.DoesNotExist:
+                # If no UserAccount exists, create it
+                age = self.cleaned_data.get('age')
+                gender = self.cleaned_data.get('gender')
+                birth_date = self.cleaned_data.get('birth_date')
+                
+                account_no = 10000 + new_user.id  # Generate account number
+                
+                user_account = UserAccount.objects.create(
+                    user=new_user,
+                    account_no=account_no,
+                    age=age,
+                    gender=gender,
+                    birth_date=birth_date
+                )
+
+            # Create UserAddress
             street_name = self.cleaned_data.get('street_name')
             city = self.cleaned_data.get('city')
             postal_code = self.cleaned_data.get('postal_code')
             country = self.cleaned_data.get('country')
-
-            user_account, created = UserAccount.objects.get_or_create(
+            
+            user_address = UserAddress.objects.create(
                 user=new_user,
-                defaults={
-                    'account_no': 10000 + new_user.id,
-                    'age': age,
-                    'gender': gender,
-                    'birth_date': birth_date
-                }
-            )
-
-            user_address, created = UserAddress.objects.get_or_create(
-                user=new_user,
-                defaults={
-                    'street_name': street_name,
-                    'postal_code': postal_code,
-                    'city': city,
-                    'country': country
-                }
+                street_name=street_name,
+                postal_code=postal_code,
+                city=city,
+                country=country
             )
 
         return new_user
-    
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        # Add CSS classes for form styling
         for field in self.fields:
             self.fields[field].widget.attrs.update({
                 'class': (
@@ -66,13 +88,17 @@ class UserRegistrationForm(UserCreationForm):
             })
 
 class UserUpdateForm(forms.ModelForm):
-    age = forms.IntegerField()
-    gender = forms.ChoiceField(choices = GENDER_TYPE)
-    birth_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
-    street_name = forms.CharField(max_length=100)
-    city = forms.CharField(max_length=100)
-    postal_code = forms.IntegerField()
-    country = forms.CharField(max_length=100)
+    age = forms.IntegerField(label='বয়স')
+    gender = forms.ChoiceField(choices=GENDER_TYPE, label='জেন্ডার')
+    birth_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), label='জন্মতারিখ')
+    street_name = forms.CharField(max_length=100, label='রাস্তার নাম')
+    city = forms.CharField(max_length=100, label='শহর')
+    postal_code = forms.IntegerField(label='পোস্টাল কোড')
+    country = forms.CharField(max_length=100, label='দেশ')
+    first_name = forms.CharField(max_length=100, label='প্রথম নাম')
+    last_name = forms.CharField(max_length=100, label='শেষ নাম')
+    email = forms.EmailField(max_length=100, label='ইমেইল')
+
     
     class Meta:
         model = User
@@ -112,7 +138,7 @@ class UserUpdateForm(forms.ModelForm):
         if commit:
             user.save()
 
-            user_account,create = UserAccount.objects.get_or_create(user=user)
+            user_account, create = UserAccount.objects.get_or_create(user=user)
             user_address, create = UserAddress.objects.get_or_create(user=user)
 
             user_account.birth_date = self.cleaned_data['birth_date']

@@ -4,7 +4,7 @@
 {% if form.non_field_errors %} 
 {% for error in form.non_field_errors %}
 <div class="alert alert-danger mt-2" role="alert">
-  <strong>Error!</strong> {{ error }}
+  <strong>ত্রুটি!</strong> {{ error }}
 </div>
 {% endfor %} 
 {% endif %}
@@ -29,8 +29,8 @@
 
 <div class="card my-6" style="background-color: #d1e8ff;" >
   <div class="card-body" >
-		<h4 class="font-bold text-3xl text-left pb-5">Account NO: {{request.user.account.account_no}}</h4>
-    <h1 class="card-title text-center pb-5 ">Update Profile</h1>
+		<h4 class="font-bold text-3xl text-left pb-5">অ্যাকাউন্ট নং: {{request.user.account.account_no}}</h4>
+    <h1 class="card-title text-center pb-5 ">প্রোফাইল আপডেট করুন</h1>
     <div class="w-100 mt-10">
       <form method="post" class="bg-white shadow rounded p-4">
         {% csrf_token %} 
@@ -38,7 +38,7 @@
 				{{hidden_field.errors }} 
 				{{ hidden_field }} 
 				{% endfor %}
-        
+
  <!--div1 - username -->
 
         <div class="form-row mb-3">
@@ -209,7 +209,7 @@
 				<!--register button-->
         <div class="form-row">
           <div class="col-12 text-right">
-            <button type="submit" class="btn btn-primary">Update</button>
+            <button type="submit" class="btn btn-primary">আপডেট করুন</button>
           </div>
         </div>
       </form>

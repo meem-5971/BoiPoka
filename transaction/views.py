@@ -13,6 +13,8 @@ from account.models import UserAccount
 from book.models import Book
 from django.contrib.auth.decorators import login_required
 from book.forms import ReviewForm
+from django.db import models
+from django.urls import reverse
 
 def send_transaction_email(user,amount,subject,template):
         message=render_to_string(template,{
@@ -24,42 +26,68 @@ def send_transaction_email(user,amount,subject,template):
         send_email.attach_alternative(message,'text/html')
         send_email.send()
 
-class TransactionCreateMixin(LoginRequiredMixin,CreateView):
-    template_name= 'transaction/transaction_form.html'
-    model_name=Transactions
-    title=''
-    success_url=reverse_lazy('profile')
+class TransactionCreateMixin(LoginRequiredMixin, CreateView):
+    template_name = 'transaction/transaction_form.html'
+    model_name = Transactions
+    title = ''
+    success_url = reverse_lazy('profile')
+
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs.update({
-            'account': self.request.user.account
-        })
+        try:
+            kwargs.update({
+                'account': self.request.user.account
+            })
+        except UserAccount.DoesNotExist:
+            # Handle missing account: create or raise an appropriate error
+            account_no = UserAccount.objects.aggregate(max=models.Max('account_no'))['max'] or 1000
+            self.request.user.account = UserAccount.objects.create(
+                user=self.request.user,
+                account_no=account_no + 1,
+                gender="Not Specified",  # Default value
+                birth_date="2000-01-01"  # Placeholder date
+            )
+            kwargs.update({
+                'account': self.request.user.account
+            })
         return kwargs
-    
+
     def get_context_data(self, **kwargs):
-        context=super().get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context.update({
             'title': self.title,
         })
         return context
-    
-class DepositMoneyView(TransactionCreateMixin):
-    form_class=DepositForm
-    title='Add Money' #user j title dekhbe page ar tab ay
 
-    
+
+class DepositMoneyView(TransactionCreateMixin):
+    form_class = DepositForm
+    title = 'Add Money'
+
     def form_valid(self, form):
-        amount=form.cleaned_data.get('amount')
-        account=self.request.user.account
-        account.balance+=amount
-        account.save(
-            update_fields=['balance']
-        )
-        messages.success(self.request,f"{amount}tk was added successfully")
-        
-        send_transaction_email(self.request.user,amount,"Deposit Message","transaction/deposite_email.html")
+        amount = form.cleaned_data.get('amount')
+        try:
+            account = self.request.user.account
+        except UserAccount.DoesNotExist:
+            # Automatically create the account if missing
+            account_no = UserAccount.objects.aggregate(max=models.Max('account_no'))['max'] or 1000
+            account = UserAccount.objects.create(
+                user=self.request.user,
+                account_no=account_no + 1,
+                gender="Not Specified",  # Default value
+                birth_date="2000-01-01"  # Placeholder date
+            )
+        # Update balance
+        account.balance += amount
+        account.save(update_fields=['balance'])
+
+        # Provide success message
+        messages.success(self.request, f"{amount}tk was added successfully")
+
+        # Send a transaction email
+        send_transaction_email(self.request.user, amount, "Deposit Message", "transaction/deposite_email.html")
         return super().form_valid(form)
-    
+
 def send_borrow_email(user_account, borrow, subject, template):
     context = {
         'user': user_account.user,  # Assuming UserAccount has a related user
@@ -72,6 +100,11 @@ def send_borrow_email(user_account, borrow, subject, template):
     send_email.attach_alternative(message, 'text/html')
     send_email.send()
 
+
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib import messages
+from django.urls import reverse
+from .models import Book, UserAccount, Borrow
 
 class BorrowBookView(LoginRequiredMixin, View):
     def post(self, request, pk):
@@ -88,10 +121,13 @@ class BorrowBookView(LoginRequiredMixin, View):
 
             messages.success(request, f"{book.title} is borrowed successfully!")
             send_borrow_email(user_account, borrow, "Book Borrowing Message", "transaction/borrow_email.html")
-            return redirect('borrow_history')
-        else:
-            messages.error(request, "Insufficient balance to borrow this book.")
             return redirect('book_detail', pk=book.pk)
+        else:
+            # Message to show when balance is insufficient
+            messages.error(request, "Insufficient balance to borrow this book.")
+            
+            return redirect('home')  # Ensure 'home' is the correct name of your homepage URL
+
 
 class ReturnBookView(LoginRequiredMixin, View):
     def post(self, request, pk):
