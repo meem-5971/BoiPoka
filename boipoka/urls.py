@@ -25,10 +25,8 @@ urlpatterns = [
     path('', views.home , name='home'),
     path('book/', include('book.urls')),
     path('profile/', include('account.urls')),
-    path('genres/<str:genre_name>/', views.home, name="genre_wise"),
+    path('genres/<slug:genre_slug>/', views.home, name="genre_wise"),
     path('transaction/',include('transaction.urls')),
 ]
 
-
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+urlpatterns += static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

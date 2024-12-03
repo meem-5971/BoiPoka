@@ -1,31 +1,22 @@
 {% extends 'base.html' %} 
 {% load static %} 
 
-{% block head_title %}বইপোকা{% endblock %} 
+{% block head_title %}BoiPoka{% endblock %} 
 
 {% block content %}
-{% if messages %}
-    <div class="container mt-3">
-        {% for message in messages %}
-            <div class="alert alert-danger font-weight-bold">
-                {{ message }}
-            </div>
-        {% endfor %}
-    </div>
-{% endif %}
 <div class="d-flex flex-wrap px-5 pt-3 align-items-center">
   <div class="col-6">
-    <h1>বইপোকা তে স্বাগতম</h1>
-    <p>আপনার সব রিডিং প্রয়োজনের জন্য স্ট্রিমলাইনড লাইব্রেরি ম্যানেজমেন্ট</p> 
+    <h1>Welcome to BoiPoka</h1>
+    <p>Streamlined Library Management for All Your Reading Needs</p>
   </div>
   <div class="col-6">
-    <img src="{% static 'img/boipoka_banner.jpg' %}" alt="BoiPoka Banner"> 
+    <img src="{% static 'img/boipoka_banner.jpg' %}" alt="BoiPoka Banner"> <!-- Corrected the static file path -->
   </div>
 </div>
 
 <hr/>
 
-<h3>শ্রেণী অনুযায়ী অনুসন্ধান করুন</h3> <!-- Translated "Search by Genre" to Bangla -->
+<h3>Search by Genre</h3>
 <div class="m-3">
   <div class="container align-items-center">
     <div class="row mt-5">
@@ -38,15 +29,15 @@
   </div>
 </div>
 
-<h4>{{ data|length }} বই পাওয়া গেছে</h4> <!-- Translated "books found" to Bangla -->
+<h4>{{ data|length }} books found</h4>
 
 <div class="container mx-container bg-body-secondary pt-2 pb-1">
   <div class="d-flex flex-wrap justify-content-center">
     {% for genre in genres %}
       <div class="m-2">
-        <div class="box text-center border rounded p-3 shadow-sm" style="width: 150px; height: 100px; display: flex; align-items: center; justify-content: center; background-color: #f9f9f9;">
-          <a href="{% url 'genre_wise' genre.name %}" class="text-decoration-none text-dark">
-            <h5 class="bx mb-0">{{ genre.name }}</h5>
+        <div class="box text-center">
+          <a href="{% url 'genre_wise' genre.slug %}" class="text-decoration-none text-dark">
+            <h5 class="bx">{{ genre.name }}</h5>
           </a>
         </div>
       </div>
@@ -54,36 +45,31 @@
   </div>
 </div>
 
-
-
-
-
-
 <div class="d-flex flex-wrap justify-content-center pt-5">
   {% for book in data %}
-    <div class="col-lg-4 col-md-6 col-sm-12 mb-4"> <!-- Adjusted grid for responsiveness -->
-      <div class="card h-100"> <!-- h-100 ensures uniform card heights -->
-        <img src="{{ book.image.url }}" class="card-img-top" alt="{{ book.title }}" style="height: 200px; object-fit: cover;"> <!-- Ensures the image fits nicely -->
-        <div class="card-body">
-          <h4 class="card-title">
-            <a href="{% url 'book_detail' book.pk %}" class="text-decoration-none text-dark fw-bold">{{ book.title }}</a>
-          </h4>
-          <p class="card-text">লেখক: {{ book.author }}</p> 
-          <p class="card-text">শ্রেণী: {{ book.genre }}</p> <!-- Translated "Genre" to Bangla -->
-          <p class="card-text">মূল্য: ৳{{ book.price }}</p> <!-- Translated "Price" to Bangla -->
+    <div class="col-sm-3">
+      <div class="card m-2">
+        <div class="card-body" style="width: 18rem;">
+          <img src="{{ book.image.url }}" class="card-img-top" alt="{{ book.title }}">
+          <h5 class="card-title">
+            <a href="{% url 'book_detail' book.pk %}" class="text-decoration-none text-dark">{{ book.title }}</a>
+          </h5>
+          <p class="card-text">Genre: {{ book.genre }}</p>
+          <p class="card-text">Price: ${{ book.price }}</p>
           <p class="card-text">{{ book.content|truncatewords:10 }}</p>
-        </div>
-        <div class="card-footer text-center">
-          {% if request.user.is_authenticated %}
-            <form method="post" action="{% url 'borrow_book' book.pk %}">
-              {% csrf_token %}
-              <button type="submit" class="btn btn-primary w-100">এখন ধার নিন</button> <!-- Full-width button -->
-            </form>
-          {% endif %}
+          <div class="container d-flex flex-wrap gap-10px">
+            {% if request.user.is_authenticated %}
+              <form method="post" action="{%url 'borrow_book' book.pk %}"> <!-- Corrected the URL name -->
+                {% csrf_token %}
+								
+                <button type="submit" class="btn btn-primary pr-10">Borrow Now</button>
+              </form>
+            {% endif %}
+            <a href="{% url 'book_detail' book.pk %}"><button class="btn btn-warning pl-10">View Details</button></a>
+          </div>
         </div>
       </div>
     </div>
   {% endfor %}
 </div>
-
 {% endblock %}

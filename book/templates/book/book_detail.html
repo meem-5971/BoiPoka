@@ -2,7 +2,7 @@
 {% load crispy_forms_tags %}
 {% block content %}
 
-<!-- Display messages -->
+
 {% if messages %}
     <div class="container">
         {% for message in messages %}
@@ -14,52 +14,37 @@
                 <div class="alert alert-info alert-dismissible fade show" role="alert">
             {% endif %}
                 
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">{{ message }}</button>
             </div>
         {% endfor %}
     </div>
 {% endif %}
 
-<!-- Book Details -->
+
+
 <div class="col-12">
     <div class="card m-2">
         <div class="card-body">
-            <img src="{{book.image.url}}" class="card-img-top" alt="{{ book.title }}" style="width:50%;">
-            <h1  class="card-title"><strong>{{book.title}}</strong></h1>
-            <p class="card-text">লেখক: {{ book.author }}</p> 
-            <p class="card-text">শ্রেণী: {{book.genre}}</p>
-            <p class="card-text">মূল্য: ৳{{book.price}}</p>
-            <p class="card-text">{{book.content}}</p>
-
-            <!-- PDF Section -->
-            {% if book.ppdf %}
-                <!-- If the book has a PDF uploaded -->
-                <a href="{{ book.ppdf.url }}" target="_blank" class="btn btn-primary">PDF ডাউনলোড করুন</a>
-                {% else %}
-                <p>এই বইটির জন্য PDF উপলব্ধ নেই।</p>
+            <img src="{{book.image.url}}" class="card-img-top" alt="..." style="width:50%;">
+            <h1 class="card-title">{{book.title}}</h1>
+						<p class="card-text">Genre: {{book.genre}}</p>
+						<p class="card-text">Price: ${{book.price}}</p>
+						<p class="card-text">{{book.content}}</p>
             
-            
-            {% endif %}
-            {% if book.pdf_url %}
-                
-                <a href="{{ book.pdf_url }}" target="_blank" class="btn btn-primary">হার্ডকপি ক্রয় করুন</a>
-                {% endif %}
+            </p>
         </div>
     </div>
 </div>
 
-<!-- Reviews Section -->
 <div class="card m-2">
-    <h5 class="p-3">সব রিভিউ দেখুন</h5>
+    <h5 class="p-3">Read All Reviews</h5>
     {% for review in book.reviews.all %}
-        <div class="card-body border m-2">
-            <p><b>{{review.name}}</b> - <small>{{review.created_on}}</small></p>
-            <p>{{review.body}}</p>
-        </div>
+  <div class="card-body border m-2">
+        <p><b>{{review.name}}</b> {{review.created_on}}</p>
+        <p>{{review.body}}</p>
+    </div>
     {% empty %}
-        <p>এখনো কোনো রিভিউ নেই।</p>
+      <p>No reviews yet.</p>
     {% endfor %}
 </div>
-
 {% endblock %}

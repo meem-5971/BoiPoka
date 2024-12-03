@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-lg navbar-light p-3" style="background-color: #d1e8ff;">
 	<div class="container-fluid">
-			<a class="navbar-brand text-white-900 font-weight-bold" href="{% url 'home' %}">বইপোকা</a> <!-- Translated "BoiPoka" to Bangla -->
+			<a class="navbar-brand text-white-900 font-weight-bold" href="{%url 'home' %}">BoiPoka</a>
 			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
 					<span class="navbar-toggler-icon"></span>
 			</button>
@@ -8,30 +8,30 @@
 					{% if request.user.is_authenticated %}
 							<ul class="navbar-nav mr-auto">
 									<li class="nav-item">
-											<a class="nav-link text-blue-900" href="{% url 'borrow_history' %}">ইতিহাস</a> <!-- Translated "History" to Bangla -->
+											<a class="nav-link text-blue-900" href="{% url 'borrow_history' %}">History</a>
 									</li>
 									<li class="nav-item">
-											<a class="nav-link text-blue-900" href="{% url 'deposit_money' %}">ব্যালেন্স জমা</a> <!-- Translated "Add Money" to Bangla -->
+											<a class="nav-link text-blue-900" href="{% url 'deposit_money' %}">Add Money</a>
 									</li>
 							</ul>
 							<span class="navbar-text text-blue-900 font-weight-bold">
-									স্বাগতম, {{ request.user.first_name }} (ব্যালেন্স : {{ request.user.account.balance }})
-							</span> <!-- Translated "Welcome" and "balance" to Bangla -->
+									Welcome, {{ request.user.first_name }} (balance : {{request.user.account.balance}})
+							</span>
 							<ul class="navbar-nav ml-auto">
 									<li class="nav-item">
-											<a class="btn btn-primary mx-2" href="{% url 'profile' %}">প্রোফাইল</a> <!-- Translated "Profile" to Bangla -->
+											<a class="btn btn-primary mx-2" href="{%url 'profile' %}">Profile</a>
 									</li>
 									<li class="nav-item">
-											<a class="btn btn-primary mx-2" href="{% url 'logout' %}">লগ আউট</a> <!-- Translated "Logout" to Bangla -->
+											<a class="btn btn-primary mx-2" href="{%url 'logout'%}">Logout</a>
 									</li>
 							</ul>
 					{% else %}
 							<ul class="navbar-nav ml-auto">
 									<li class="nav-item">
-											<a class="btn btn-primary mr-2" href="{% url 'login' %}">লগইন</a> <!-- Translated "Login" to Bangla -->
+											<a class="btn btn-primary mr-2" href="{%url 'login'%}">Login</a>
 									</li>
 									<li class="nav-item">
-											<a class="btn btn-primary" href="{% url 'register' %}">রেজিস্টার</a> <!-- Translated "Register" to Bangla -->
+											<a class="btn btn-primary" href="{%url 'register'%}">Register</a>
 									</li>
 							</ul>
 					{% endif %}

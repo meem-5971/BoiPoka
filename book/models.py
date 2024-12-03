@@ -8,13 +8,10 @@ class Book(models.Model):
     title = models.CharField(max_length=50)
     # user = models.ForeignKey(UserAccount, on_delete=models.CASCADE)
     borrower = models.ManyToManyField(User, blank=True)
-    author = models.CharField(max_length=100,blank=True,null=True)
     content = models.TextField()
     price=models.IntegerField()
-    genre = models.ForeignKey(Genre, on_delete=models.SET_NULL, null=True)
-    image = models.ImageField(upload_to='book/uploads/images/', blank=True, null=True)  # Separate folder for images
-    ppdf = models.FileField(upload_to='book/uploads/files/', blank=True, null=True)  
-    pdf_url = models.URLField(null=True, blank=True) 
+    genre = models.ForeignKey(Genre, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='book/media/uploads/', blank = True, null = True)
     def __str__(self):
         return self.title 
 
@@ -26,4 +23,3 @@ class Review(models.Model):
     
     def __str__(self):
         return f"Comments by {self.name}"
-

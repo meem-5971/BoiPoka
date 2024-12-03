@@ -4,7 +4,7 @@
 {% if form.non_field_errors %} 
 {% for error in form.non_field_errors %}
 <div class="alert alert-danger mt-2" role="alert">
-    <strong>ত্রুটি!</strong> {{ error }}
+    <strong>Error!</strong> {{ error }}
 </div>
 {% endfor %} 
 {% endif %}
@@ -31,7 +31,7 @@
     <div class="col-md-6">
         <div class="card mt-4">
             <div class="card-header text-center">
-                <h1 class="card-title">লগ ইন</h1>
+                <h1 class="card-title">Login</h1>
             </div>
             <div class="card-body">
                 <form method="post">
@@ -52,7 +52,7 @@
                     </div>
                     {% endfor %}
                     <div class="form-group text-center">
-                        <button class="btn btn-primary" type="submit">লগ ইন</button>
+                        <button class="btn btn-primary" type="submit">Log In</button>
                     </div>
                 </form>
             </div>
